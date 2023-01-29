@@ -7,6 +7,7 @@ import React, { useEffect } from 'react'
 import { useRouter } from 'next/router';
 import NotFound from '@/components/Community/NotFound';
 import Header from '@/components/Community/Header';
+import PageLayout from '@/components/Layout/PageLayout';
 
 
 type CommunityPageProps = {
@@ -21,6 +22,11 @@ const CommunityPage: React.FC<CommunityPageProps> = ({communityData}) => {
   return (
     <>
       <Header communityData={communityData} />
+      <PageLayout>
+        <>
+        <div>LEft</div></>
+        <><div>right</div></>
+      </PageLayout>
     </>
   )
 }
