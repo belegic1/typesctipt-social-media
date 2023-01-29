@@ -20,6 +20,9 @@ import React from 'react';
 import CheckboxTypeInput from "./CheckboxTypeInput";
 import { BsFillEyeFill, BsFillPersonFill } from "react-icons/bs";
 import { HiLockClosed } from "react-icons/hi";
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { auth, firestore } from "@/firebase/clientApp";
+import { useAuthState } from "react-firebase-hooks/auth";
 type CreateCommunityModalProps = {
   open: boolean;
   handleClose: () => void;
@@ -48,10 +51,41 @@ const CreateCommunityModal: React.FC<CreateCommunityModalProps> = ({
   open,
   handleClose,
 }) => {
+  const [user] = useAuthState(auth)
   const [communityName, setCommunityName] = useState("")
   const [communityType, setCommunityType] = useState('public')
-  const onCommunityTypeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCommunityType(e.target.name)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+
+  const handleCreateCommunity = async () => {
+    const format = /^[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]*$/;
+    if (format.test(communityName) || communityName.length < 3) {
+      setError("Community name must be at least 3 characters long and cannot contain special characters")
+      return;
+    }
+    setLoading(true)
+    try {
+          const communityDocRef = doc(firestore, 'communities', communityName);
+          const communityDoc = await getDoc(communityDocRef);
+          if (communityDoc.exists()) {
+            throw new Error("Community with this name already exists.")
+          }
+
+          await setDoc(communityDocRef, {
+            creatorId: user?.uid,
+            createdAt: serverTimestamp(),
+            numberOfMembers: 1,
+            privacyType: communityType,
+          });
+      setLoading(false)
+      setCommunityName("")
+    } catch (error:unknown) {
+      if (error instanceof Error) {
+        setError(error.message)
+        setLoading(false)
+      }
+    }
+
   }
   return (
     <Modal size='lg' isOpen={open} onClose={handleClose}>
@@ -97,6 +131,7 @@ const CreateCommunityModal: React.FC<CreateCommunityModalProps> = ({
             <Text fontSize="9pt">
               {21 - communityName?.length} characters remianing
             </Text>
+            {error && <Text fontSize='9pt' color='red'>{error} pt={ 1}</Text>}
           </ModalBody>
           <Box my={4}>
             <Text fontWeight={600} fontSize={15}>
@@ -122,7 +157,7 @@ const CreateCommunityModal: React.FC<CreateCommunityModalProps> = ({
           <Button variant='outlined' height='30px' mr={3} onClick={handleClose}>
             Cancel
           </Button>
-          <Button height='30px' onClick={handleClose}>
+          <Button isLoading={loading} height='30px' onClick={handleCreateCommunity}>
             Create community
           </Button>
         </ModalFooter>

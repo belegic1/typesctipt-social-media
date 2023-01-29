@@ -14,7 +14,7 @@ const firebaseConfig = {
 // Initialize Firebase server side rendering!!!
 // const app = initializeApp(firebaseConfig);
 const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const firestor = getFirestore(app);
+const firestore = getFirestore(app);
 const auth = getAuth(app)
 const storage = getStorage(app);
-export { app, getFirestore, auth, storage };
+export { app, firestore, auth, storage };
