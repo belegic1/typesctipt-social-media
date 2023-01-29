@@ -32,7 +32,7 @@ const AuthButtons = () => {
         }}
         mr={2}
         onClick={() => {
-                    setAuthModalIsOpen(true);
+                    setAuthModalIsOpen(true, "signup");
 
         }}
       >

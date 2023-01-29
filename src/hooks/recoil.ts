@@ -1,14 +1,14 @@
-import { authModalState } from '@/atoms/authModal';
+import { authModalState, ModalView } from '@/atoms/authModal';
 import { useSetRecoilState } from 'recoil';
 
 export const useSetAuthModalView = () => {
   const setAuthModalState = useSetRecoilState(authModalState);
 
-  const setAuthModalView = (view: 'login' | 'signup' | 'resetPassword') => {
+  const setAuthModalView = (view: ModalView) => {
     setAuthModalState((prev) => ({ ...prev, view }));
   };
-  const setAuthModalIsOpen = (open: boolean) => {
-    setAuthModalState((prev) => ({ ...prev, open: open }));
+  const setAuthModalIsOpen = (open: boolean, view?:ModalView) => {
+    setAuthModalState({ open: open, view: view || "login" });
   };
 
   return { setAuthModalView, setAuthModalIsOpen };

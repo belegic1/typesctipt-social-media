@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Modal,
   ModalBody,
@@ -13,10 +13,13 @@ import { useRecoilState } from 'recoil';
 import { authModalState } from '@/atoms/authModal';
 import AuthInputs from './AuthInputs';
 import OAuthButton from './OAuthButton';
+import { useAuthState } from 'react-firebase-hooks/auth';
+import { auth } from '@/firebase/clientApp';
+import ResetPassword from './ResetPassword';
 
 const AuthModel = () => {
   const [modalState, setModalState] = useRecoilState(authModalState);
-
+  const [user, loading, error] = useAuthState(auth);
   const closeModal = () => {
     setModalState((prev) => ({
       ...prev,
@@ -24,6 +27,11 @@ const AuthModel = () => {
     }));
   };
 
+  useEffect(() => {
+    if (user) {
+      closeModal();
+    }
+  }, [user])
   return (
     <>
       <Modal
@@ -51,7 +59,7 @@ const AuthModel = () => {
                       <Flex direction={'column'} align='center' justify='center' width='70%'>
                           <OAuthButton />
                           <Text fontWeight={700} color='gray.500'>OR</Text>
-                          <AuthInputs />
+                         {modalState.view === 'resetPassword'? <ResetPassword />: <AuthInputs />}
                           {/* <ResetPassword /> */}
                       </Flex>
           </ModalBody>
