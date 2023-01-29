@@ -20,7 +20,7 @@ import React from 'react';
 import CheckboxTypeInput from "./CheckboxTypeInput";
 import { BsFillEyeFill, BsFillPersonFill } from "react-icons/bs";
 import { HiLockClosed } from "react-icons/hi";
-import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
+import { doc, getDoc, runTransaction, serverTimestamp, setDoc } from "firebase/firestore";
 import { auth, firestore } from "@/firebase/clientApp";
 import { useAuthState } from "react-firebase-hooks/auth";
 type CreateCommunityModalProps = {
@@ -65,18 +65,29 @@ const CreateCommunityModal: React.FC<CreateCommunityModalProps> = ({
     }
     setLoading(true)
     try {
-          const communityDocRef = doc(firestore, 'communities', communityName);
-          const communityDoc = await getDoc(communityDocRef);
-          if (communityDoc.exists()) {
-            throw new Error("Community with this name already exists.")
-          }
-
-          await setDoc(communityDocRef, {
+      const communityDocRef = doc(firestore, 'communities', communityName);
+      
+      await runTransaction(firestore, async (transaction) => {
+          const communityDoc = await transaction.get(communityDocRef);
+           if (communityDoc.exists()) {
+             throw new Error('Community with this name already exists.');
+        }
+          await transaction.set(communityDocRef, {
             creatorId: user?.uid,
             createdAt: serverTimestamp(),
             numberOfMembers: 1,
             privacyType: communityType,
           });
+        
+        transaction.set(doc(firestore, `users/${user?.uid}/communitySnippets`, communityName), {
+          communityId: communityName,
+          isModerator: true,
+
+        })
+      })
+       
+
+        
       setLoading(false)
       setCommunityName("")
     } catch (error:unknown) {
