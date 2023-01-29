@@ -1,10 +1,10 @@
-import React from 'react'
-import { Button } from "@chakra-ui/react"
-import { useSetRecoilState } from "recoil";
+import React from 'react';
+import { Button } from '@chakra-ui/react';
+import { useSetRecoilState } from 'recoil';
 import { authModalState } from '@/atoms/authModal';
 import { useSetAuthModalView } from '@/hooks/recoil';
 const AuthButtons = () => {
-    const { setAuthModalIsOpen } = useSetAuthModalView();
+  const { setAuthModalIsOpen } = useSetAuthModalView();
 
   return (
     <>
@@ -18,7 +18,7 @@ const AuthButtons = () => {
         }}
         mr={2}
         onClick={() => {
-          setAuthModalIsOpen(true)
+          setAuthModalIsOpen(true);
         }}
       >
         Log in
@@ -32,14 +32,13 @@ const AuthButtons = () => {
         }}
         mr={2}
         onClick={() => {
-                    setAuthModalIsOpen(true, "signup");
-
+          setAuthModalIsOpen(true, 'signup');
         }}
       >
         Sign up
       </Button>
     </>
   );
-}
+};
 
-export default AuthButtons
+export default AuthButtons;
