@@ -1,4 +1,4 @@
-import { Community } from '@/atoms/CommunitiesAtom';
+import { Community, communityState } from '@/atoms/CommunitiesAtom';
 import { firestore } from '@/firebase/clientApp';
 import { doc, getDoc } from 'firebase/firestore';
 import { GetServerSidePropsContext } from 'next';
@@ -10,6 +10,8 @@ import Header from '@/components/Community/Header';
 import PageLayout from '@/components/Layout/PageLayout';
 import CreatePostLink from '@/components/Community/CreatePostLink';
 import Posts from '@/components/Posts/Posts';
+import { useSetRecoilState } from 'recoil';
+import About from '@/components/Community/About';
 
 
 type CommunityPageProps = {
@@ -18,9 +20,14 @@ type CommunityPageProps = {
 
 const CommunityPage: React.FC<CommunityPageProps> = ({communityData}) => {
  
+  const setCommunityStateValue = useSetRecoilState(communityState)
   if (!communityData) {
     return <NotFound />
   }
+
+  useEffect(() => {
+    setCommunityStateValue(prev => ({...prev, currentCommunity: communityData}))
+  }, [])
   return (
     <>
       <Header communityData={communityData} />
@@ -29,7 +36,9 @@ const CommunityPage: React.FC<CommunityPageProps> = ({communityData}) => {
           <CreatePostLink />
           <Posts communityData={communityData} />
         </>
-        <></>
+        <>
+          <About communityData={communityData} />
+        </>
       </PageLayout>
     </>
   );

@@ -30,7 +30,7 @@ const CreatePostLink = () => {
       border='1px solid'
       borderColor='gray.300'
       p={2}
-      m={4}
+      mb={4}
     >
       <Icon as={FaReddit} fontSize={36} color='gray.300' mr={4} />
       <Input placeholder='Create Post' fontSize='10pt' _placeholder={{ color: "gray.500" }} _hover={{

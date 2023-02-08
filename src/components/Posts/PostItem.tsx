@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import {
+  Alert,
+  AlertIcon,
   Flex,
   Icon,
   Image,
@@ -23,13 +25,14 @@ import {
 import Link from 'next/link';
 import { Post } from '@/atoms/postsAtom';
 import moment from 'moment';
+import { CgLayoutGrid } from 'react-icons/cg';
 
 type PostItemProps = {
   post: Post;
   userIsCreator: boolean;
   userVoteValue?: number;
   onVote: () => {};
-  onDeletePost: () => {};
+  onDeletePost: (post: Post) => Promise<boolean>;
   onSelectPost: () => void;
 };
 const PostItem: React.FC<PostItemProps> = ({
@@ -41,6 +44,22 @@ const PostItem: React.FC<PostItemProps> = ({
   onSelectPost,
 }) => {
   const [postLoadingmage, setPostLoadingmage] = useState(true)
+  const [loadingDelete, setLoadingDelete] = useState(false)
+  const [error, setError] = useState(false)
+  const handleDelete = async () => {
+    setLoadingDelete(true)
+    try {
+      const success = await onDeletePost(post)
+      if (!success) {
+        throw new Error("Failed to delete post")
+
+      }
+      
+    } catch (error:any) {
+      setError(error.message)
+    }
+    setLoadingDelete(false)
+  }
   return (
     <Flex
       border="1px solid"
@@ -82,6 +101,12 @@ const PostItem: React.FC<PostItemProps> = ({
         />
       </Flex>
       <Flex direction="column" width="100%">
+        {error && (
+          <Alert status="error">
+            <AlertIcon />
+            <Text mr={2}>{error}</Text>
+          </Alert>
+        )}
         <Stack spacing={1} p={'10px'}>
           <Stack direction="row" spacing={0.6} align="center" fontSize="9pt">
             <Text>
@@ -96,16 +121,16 @@ const PostItem: React.FC<PostItemProps> = ({
           <Text fontSize={'10pt'}>{post.body}</Text>
           {post.imageURL && (
             <Flex justify={'center'} p={2}>
-              {postLoadingmage &&(
-                <Skeleton height='200px' width='100%' borderRadius={4} />
+              {postLoadingmage && (
+                <Skeleton height="200px" width="100%" borderRadius={4} />
               )}
               <Image
                 onLoad={() => setPostLoadingmage(false)}
-                display={postLoadingmage ? "none": "unset"}
-                  maxHeight={'460px'}
-                  alt="post image"
-                  src={post.imageURL}
-                />
+                display={postLoadingmage ? 'none' : 'unset'}
+                maxHeight={'460px'}
+                alt="post image"
+                src={post.imageURL}
+              />
             </Flex>
           )}
         </Stack>
@@ -142,15 +167,21 @@ const PostItem: React.FC<PostItemProps> = ({
           </Flex>
           {userIsCreator && (
             <Flex
-              onClick={onDeletePost}
+              onClick={handleDelete}
               align="center"
               p="8px 10px"
               borderRadius={4}
               _hover={{ bg: 'gray.200' }}
               cursor="pointer"
             >
-              <Icon as={AiOutlineDelete} mr={2} />
-              <Text fontSize="9pt">Delete</Text>
+              {loadingDelete ? (
+                <Spinner size="sm" />
+              ) : (
+                <>
+                  <Icon as={AiOutlineDelete} mr={2} />
+                  <Text fontSize="9pt">Delete</Text>
+                </>
+              )}
             </Flex>
           )}
         </Flex>

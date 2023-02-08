@@ -7,19 +7,19 @@ export interface Community {
   privacyType: PrivacyType;
   numberOfMembers: number;
   createdAt?: Timestamp;
-  imageUrl?: string;
+  imageURL?: string;
 }
 
 export type PrivacyType = 'public' | 'restricted' | "private";
 export interface CommunitySnippet{
   communityId: string;
   isModerator?: boolean;
-  imageUrl?: string;
+  imageURL?: string;
 
 }
 interface CommunityState{
   mySnippets: CommunitySnippet[];
-  //visitedCommunities
+  currentCommunity?: Community
 }
 
 const defaultCommunityState: CommunityState = {
