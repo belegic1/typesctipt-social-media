@@ -6,6 +6,7 @@ import { Stack } from '@chakra-ui/react';
 import { collection, getDocs, orderBy, query, where } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { CgLayoutGrid } from 'react-icons/cg';
 import PostItem from './PostItem';
 import PostLoader from './PostLoader';
 
@@ -16,6 +17,7 @@ const Posts: React.FC<PostProps> = ({ communityData }) => {
   const [loading, setLoading] = useState(false)
   const { postStateValue, setPostStateValue, onDeletePost, onVote, onSelectPost } = usePosts()
   const [user] = useAuthState(auth)
+
 
   const getPosts = async () => {
     setLoading(true)
@@ -36,7 +38,7 @@ const Posts: React.FC<PostProps> = ({ communityData }) => {
   }
   useEffect(() => {
     getPosts()
-  }, [])
+  }, [user])
   return (
     <>
       {loading ? (
@@ -48,7 +50,7 @@ const Posts: React.FC<PostProps> = ({ communityData }) => {
               key={item.id}
               post={item}
               userIsCreator={user?.uid === item.creatorId}
-              userVoteValue={undefined}
+              userVoteValue={postStateValue.postVotes.find(vote => vote.postId === item.id)?.voteValue}
               onVote={onVote}
               onSelectPost={onSelectPost}
               onDeletePost={onDeletePost}

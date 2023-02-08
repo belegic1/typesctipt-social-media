@@ -11,7 +11,6 @@ import { useRecoilValue } from 'recoil'
 const SubmitPostPage = () => {
   const [user] = useAuthState(auth)
   const communityStateValue = useRecoilValue(communityState)
-  console.log({ communityStateValue });
   
   return (
     <PageLayout>

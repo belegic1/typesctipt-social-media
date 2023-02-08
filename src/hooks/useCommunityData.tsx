@@ -32,7 +32,7 @@ const useCommunityData = () => {
       const batch = writeBatch(firestore)
       const newSnippet: CommunitySnippet = {
         communityId: data.id,
-        imageUrl: data.imageUrl || "",
+        imageURL: data.imageURL || "",
       }
       batch.set(doc(firestore, `/users/${user?.uid}/communitySnippet`, data.id), newSnippet)
       batch.update(doc(firestore, "communities", data.id), {
@@ -76,9 +76,9 @@ const useCommunityData = () => {
   }
   useEffect(() => {
     if (!user) {
+      setCommunityStateValue(prev => ({ ...prev, mySnippets: [] }));
       return;
     }
-    console.log('running');
     getMySnippets();
   }, [user])
   return {
