@@ -1,9 +1,25 @@
+import PageLayout from '@/components/Layout/PageLayout'
+import NewPostsForm from '@/components/Posts/NewPostsForm'
+import { auth } from '@/firebase/clientApp'
+import { Box, Text } from '@chakra-ui/react'
 import React from 'react'
+import { useAuthState } from 'react-firebase-hooks/auth'
 
-const Submit = () => {
+const SubmitPostPage = () => {
+  const [user] = useAuthState(auth)
   return (
-    <div>Submit</div>
+    <PageLayout>
+      <>
+        <Box p='14px 0px' borderBottom='1px solid' borderColor='white'>
+          <Text>Create Post</Text>
+        </Box>
+        {user && <NewPostsForm user={user} />}
+      </>
+      <>
+        about
+      </>
+    </PageLayout>
   )
 }
 
-export default Submit
+export default SubmitPostPage

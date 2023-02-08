@@ -24,11 +24,19 @@ import { auth } from '@/firebase/clientApp';
 import { signOut } from 'firebase/auth';
 import { IoSparkles } from 'react-icons/io5';
 import { useSetAuthModalView } from '@/hooks/recoil';
+import { useResetRecoilState } from 'recoil';
+import { communityState } from '@/atoms/CommunitiesAtom';
 type UserMenuProps = {
   user?: User | null;
 };
 const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
   const { setAuthModalIsOpen } = useSetAuthModalView();
+  const resetCommunityState = useResetRecoilState(communityState)
+
+  const logout = async () => {
+    await signOut(auth)//
+    resetCommunityState()
+  }
   return (
     <Menu>
       <MenuButton
@@ -91,7 +99,7 @@ const UserMenu: React.FC<UserMenuProps> = ({ user }) => {
             <MenuDivider />
 
             <MenuItem
-              onClick={() => signOut(auth)}
+              onClick={() => logout()}
               fontSize="10pt"
               fontWeight={700}
               _hover={{

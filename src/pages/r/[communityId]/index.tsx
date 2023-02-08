@@ -8,6 +8,8 @@ import { useRouter } from 'next/router';
 import NotFound from '@/components/Community/NotFound';
 import Header from '@/components/Community/Header';
 import PageLayout from '@/components/Layout/PageLayout';
+import CreatePostLink from '@/components/Community/CreatePostLink';
+import Posts from '@/components/Posts/Posts';
 
 
 type CommunityPageProps = {
@@ -24,11 +26,13 @@ const CommunityPage: React.FC<CommunityPageProps> = ({communityData}) => {
       <Header communityData={communityData} />
       <PageLayout>
         <>
-        <div>LEft</div></>
-        <><div>right</div></>
+          <CreatePostLink />
+          <Posts communityData={communityData} />
+        </>
+        <></>
       </PageLayout>
     </>
-  )
+  );
 }
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
