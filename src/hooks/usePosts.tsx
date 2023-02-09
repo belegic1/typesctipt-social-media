@@ -4,6 +4,7 @@ import { Post, postState, PostVote } from '@/atoms/postsAtom'
 import { auth, firestore, storage } from '@/firebase/clientApp'
 import { collection, deleteDoc, doc, getDocs, query, where, writeBatch } from 'firebase/firestore'
 import { deleteObject, ref } from 'firebase/storage'
+import { useRouter } from 'next/router'
 import React, { useEffect } from 'react'
 import { useAuthState } from 'react-firebase-hooks/auth'
 import { CgLayoutGrid } from 'react-icons/cg'
@@ -11,11 +12,14 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 
 
 const usePosts = () => {
+  const router = useRouter()
   const [user] = useAuthState(auth)
   const [postStateValue, setPostStateValue] = useRecoilState(postState)
-  const {currentCommunity} = useRecoilValue(communityState)
-  const onVote = async (post: Post, vote: number, communityId: string) => {
-const setAuthModalState = useSetRecoilState(authModalState)
+  const { currentCommunity } = useRecoilValue(communityState)
+  const setAuthModalState = useSetRecoilState(authModalState);
+  
+  const onVote = async (e: React.MouseEvent<SVGElement, MouseEvent>, post: Post, vote: number, communityId: string) => {
+    e.stopPropagation();
     if (!user?.uid) {
       setAuthModalState({ open: true, view: 'login' });
       return;
@@ -61,17 +65,26 @@ const setAuthModalState = useSetRecoilState(authModalState)
        }
       }
       
-      const postRef = doc(firestore, 'posts', post.id!);
-      batch.update(postRef, { voteStatus: voteStatus + voteChange })
-      await batch.commit()
+     
       const postIdx = postStateValue.posts.findIndex(item => item.id === post.id)
       updatedPosts[postIdx] = updatedPost;
-      setPostStateValue(prev => ({...prev, posts: updatedPosts, postVotes: updatedPostVotes}))
+      setPostStateValue(prev => ({ ...prev, posts: updatedPosts, postVotes: updatedPostVotes }))
+      
+      if (postStateValue.selectedPost) {
+        setPostStateValue(prev => ({ ...prev, selectedPost: updatedPost }))
+      }
+
+       const postRef = doc(firestore, 'posts', post.id!);
+       batch.update(postRef, { voteStatus: voteStatus + voteChange });
+       await batch.commit();
    } catch (error:any) {
     console.log(error)
    }
    };
-  const onSelectPost = () => { };
+  const onSelectPost = (post: Post) => {
+    setPostStateValue(prev => ({ ...prev, selectedPost: post }))
+    router.push(`/r/${post.communityId}/comments/${post.id}`)
+   };
   const onDeletePost = async (post: Post): Promise<boolean> => {
     try {
       
