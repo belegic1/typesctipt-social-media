@@ -38,7 +38,7 @@ const Posts: React.FC<PostProps> = ({ communityData }) => {
   }
   useEffect(() => {
     getPosts()
-  }, [user])
+  }, [])
   return (
     <>
       {loading ? (
