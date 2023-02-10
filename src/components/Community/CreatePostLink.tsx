@@ -7,10 +7,12 @@ import { Flex,Icon, Input } from '@chakra-ui/react'
 import { FaReddit } from 'react-icons/fa'
 import { IoImageOutline } from 'react-icons/io5'
 import { BsLink45Deg } from 'react-icons/bs'
+import useDirectory from '@/hooks/useDirectory'
 const CreatePostLink = () => {
   const router = useRouter()
   const [user] = useAuthState(auth)
-  const {setAuthModalIsOpen} = useSetAuthModalView()
+  const { setAuthModalIsOpen } = useSetAuthModalView()
+  const {toggleMenuOPen} = useDirectory()
   const onClick = () => {
     if (!user) {
       setAuthModalIsOpen(true)
@@ -18,7 +20,12 @@ const CreatePostLink = () => {
     }
     const {communityId} = router.query;
     console.log(router.query)
-    router.push(`/r/${communityId}/submit`)
+    if (communityId) {
+    router.push(`/r/${communityId}/submit`);
+      return;
+    }
+
+    toggleMenuOPen()
   }
   return (
     <Flex
